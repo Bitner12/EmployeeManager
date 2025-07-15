@@ -1,0 +1,75 @@
+﻿using Microsoft.AspNetCore.Http.HttpResults;
+using Microsoft.EntityFrameworkCore;
+using WebApplication1.Data;
+using WebApplication1.Enties;
+using WebApplication1.Models.Request;
+using WebApplication1.Response;
+
+namespace WebApplication1.Repositories
+{
+    public class WorkerRepository : IWorkerRepository
+    {
+        private readonly AppDbContext _appDbcontext;
+        public WorkerRepository(AppDbContext appDbContex)
+        {
+            _appDbcontext = appDbContex;
+        }
+        public async Task<List<Worker>> GetAllAsync()
+        {
+            return await _appDbcontext.Workers
+                          .AsNoTracking()
+                          .ToListAsync();
+        }
+        public async Task<List<Worker>> GetWorkersWithHours(string search, DateTime? startDate, DateTime? endDate)
+        {
+            return await _appDbcontext.Workers
+
+                          .AsNoTracking()
+                          .Where(w => w.Name.ToLower().Contains(search.ToLower()))
+                          .Include(w => w.Hours.Where(h =>(!startDate.HasValue || h.Date >= startDate.Value) &&
+                                                                                               (!endDate.HasValue || h.Date <= endDate.Value)))                        
+                          .ToListAsync();
+    
+        }
+        public async Task<Worker> GetById(int id)
+        {
+            return await _appDbcontext.Workers
+                .AsNoTracking()
+                .Include(w => w.Hours)
+                .FirstOrDefaultAsync(w => w.Id == id);
+                
+        }
+        public async Task<Worker> Create(WorkerRequest worker)
+        {
+
+            var workerEntity = new Worker()
+            {
+                Name = worker.Name,
+                CostPerHour = worker.CostPerHour,
+               
+            };
+           
+
+            var result = await _appDbcontext.Workers.AddAsync(workerEntity);
+            await _appDbcontext.SaveChangesAsync();
+            return result.Entity;
+        }
+        public async Task<int> Update(int id, string name, decimal costPerHour)
+        {
+
+            await _appDbcontext.Workers
+                .Where(w => w.Id == id)
+                .ExecuteUpdateAsync(s => s
+                .SetProperty(w => w.Name, name)
+                .SetProperty(w => w.CostPerHour, costPerHour));
+            return id;
+        }
+        public async Task<int> Delete(int id)
+        {
+            await _appDbcontext.Workers
+                .Where(w => w.Id == id)
+                .ExecuteDeleteAsync();
+            return id;
+        }
+    }
+}

@@ -1,0 +1,64 @@
+﻿using System.Linq;
+using WebApplication1.Data;
+using WebApplication1.Enties;
+using WebApplication1.Migrations;
+using WebApplication1.Models.Request;
+using WebApplication1.Repositories;
+using WebApplication1.Response;
+
+namespace WebApplication1.Services
+{
+    public class WorkerService : IWorkerService
+    {
+        private readonly IWorkerRepository _workerRepository;
+
+        public WorkerService(IWorkerRepository workerRepository)
+        {
+            _workerRepository = workerRepository;
+        }
+
+        public async Task<Worker> CreatWorker(WorkerRequest worker)
+        {
+            return await _workerRepository.Create(worker);
+        }
+        public async Task<int> DeleteWorker(int id)
+        {
+            return await _workerRepository.Delete(id);
+        }
+        public async Task<int> UpdateWorker(int id, string name, decimal costPerHour)
+        {
+           
+            return await _workerRepository.Update(id, name, costPerHour);
+        }
+        public async Task<List<Worker>> GetAllAsync()
+        {
+            return await _workerRepository.GetAllAsync();
+        }
+        public async Task<Worker> GetById(int id)
+        {
+            return await _workerRepository.GetById(id);
+        }
+        public async Task<List<WorkerDto>> GetWorkerResults(string searchName, DateTime? startDate, DateTime? endDate)
+        {
+            var workers = await _workerRepository.GetWorkersWithHours(searchName, startDate, endDate);
+            var result = workers.Select(w => new WorkerDto
+            {
+                Id = w.Id,
+                Name = w.Name,
+                CostPerHour = w.CostPerHour,
+                Hours = w.Hours.Select(h => new HourDto
+                {
+                    Id = h.Id,
+                    Date = h.Date.ToString("dd-MM-yyyy"),
+                    Hours = (decimal)h.Hours
+                }).ToList(),
+                TotalHours = (decimal)w.Hours.Sum(h => h.Hours),
+                TotalCost = (decimal)w.Hours.Sum(h => h.Hours) * w.CostPerHour
+            }).ToList();
+
+            return result;
+        }
+
+
+    }
+}
