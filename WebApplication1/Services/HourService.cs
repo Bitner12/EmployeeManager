@@ -16,7 +16,7 @@ namespace WebApplication1.Services
         {
             return await _hourRepository.Create(hour);
         }
-        public async Task<int> DeleteHour(int id, DateTime date)
+        public async Task<int> DeleteHour(int id, DateTime date) 
         {
             await _hourRepository.Delete(id, date);
             return id;

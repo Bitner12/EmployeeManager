@@ -4,6 +4,9 @@ using WebApplication1.Data;
 using WebApplication1.Repositories;
 using WebApplication1.Services;
 
+
+//TODO: як усе зробиш потр≥бно буде посортувати все по папкам Controllers, Shared, Domain, Application (пуста), Infrastructure
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.

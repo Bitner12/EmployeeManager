@@ -38,9 +38,10 @@ namespace WebApplication1.Services
         {
             return await _workerRepository.GetById(id);
         }
-        public async Task<List<WorkerDto>> GetWorkerResults(string searchName, DateTime? startDate, DateTime? endDate)
+        public async Task<List<WorkerDto>> GetWorkerResults(string searchName, DateTime? startDate, DateTime? endDate)//TODO: Погана назва метода.
         {
             var workers = await _workerRepository.GetWorkersWithHours(searchName, startDate, endDate);
+            //TODO: Змінна result тут не потрібна, можна повернути результат прямо з Select.
             var result = workers.Select(w => new WorkerDto
             {
                 Id = w.Id,
@@ -56,7 +57,7 @@ namespace WebApplication1.Services
                 TotalCost = (decimal)w.Hours.Sum(h => h.Hours) * w.CostPerHour
             }).ToList();
 
-            return result;
+            return result; //TODO: А що буде коли юзера не буде знайдено?
         }
 
 
