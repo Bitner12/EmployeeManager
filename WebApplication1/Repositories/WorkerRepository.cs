@@ -41,7 +41,7 @@ namespace WebApplication1.Repositories
         }
         public async Task<Worker> Create(WorkerRequest worker)
         {
-
+            //TODO: За створення співробітка повинен відповідати сервіс а не репозиторій.
             var workerEntity = new Worker()
             {
                 Name = worker.Name,
@@ -56,7 +56,7 @@ namespace WebApplication1.Repositories
         }
         public async Task<int> Update(int id, string name, decimal costPerHour)
         {
-
+            //TODO: За оновлення співробітка повинен відповідати сервіс а не репозиторій. Оновлення виконуй за допомогую трекінгу. Тобто отримай співробітка з бази даних, онови його властивості і збережи зміни.
             await _appDbcontext.Workers
                 .Where(w => w.Id == id)
                 .ExecuteUpdateAsync(s => s
